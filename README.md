@@ -54,7 +54,7 @@ Add the following to system's PATH in environment variables
 ```
 Wherever your **`Documents`** folder is located. e.g.
 ```
-C:\Users\bgbrwr\Documents\WindowsPowerShell\Tools\ColorTool
+C:\Userfiles\awalker\Documents\WindowsPowerShell\Tools\ColorTool
 ```
 
 Add the following to User Variables in environment variables
