@@ -32,4 +32,4 @@ Update-Module Get-ChildItemColor -Scope CurrentUser
 ```
 Change *$ThemeSettings.MyThemesLocation* in [Microsfot.PowerShell_profile.ps1](https://github.com/BGBRWR/PowerShell-Settings/blob/master/Microsoft.PowerShell_profile.ps1#L112) to your own '\Documents\WindowsPowerShell\PoshThemes'
 
-### Install DejaVu Font
+#### Install DejaVu Font
