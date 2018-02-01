@@ -94,3 +94,4 @@ Extra themes are already included. You can review them [here](https://github.com
 * [oh-my-posh](https://github.com/JanJoris/oh-my-posh)
 * [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts)
 * [FontForge](http://fontforge.github.io/en-US/)
+* [posh-git](https://github.com/dahlbyk/posh-git)
