@@ -60,8 +60,8 @@ function Write-Theme {
     $timeStamp = Get-Date -UFormat %r
     $timestamp = "[$timeStamp]"
 
-    $timestampStartAt = [System.Text.Encoding]::GetEncoding("UTF-8").GetByteCount($timestamp) + 1
-    Set-CursorForRightBlockWrite -textLength $timestampStartAt
+    $timestampStartAt = [System.Text.Encoding]::GetEncoding("UTF-8").GetByteCount($timestamp)
+    Set-CursorForRight -textLength $timestampStartAt
 
     Write-Host $timeStamp -ForegroundColor $sl.Colors.PromptForegroundColor
 
@@ -71,7 +71,19 @@ function Write-Theme {
 
     Write-Prompt -Object $sl.PromptSymbols.PromptIndicator -ForegroundColor $sl.Colors.PromptBackgroundColor
 }
-
+function Set-CursorForRight {
+    param(
+        [int]
+        $textLength
+    )
+    $rawUI = $Host.UI.RawUI
+    $width = $rawUI.BufferSize.Width
+    $space = $width - $textLength - 1
+    $postionEl = $rawUI.CursorPosition
+    $postionEl.X = $space
+    $host.UI.RawUI.CursorPosition = $postionEl
+    # Write-Host "$escapeChar[$($space)G" -NoNewline
+}
 $sl = $global:ThemeSettings #local settings
 $sl.PromptSymbols.StartSymbol = ' '
 # $sl.PromptSymbols.PromptIndicator = [char]::ConvertFromUtf32(0x276F)
