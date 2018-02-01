@@ -1,6 +1,6 @@
 # PowerShell-Settings
 Improve PowerShell because it's ugly.
-
+<img width="841" alt="powershellscreenshot" src="https://user-images.githubusercontent.com/20848224/35691185-09ea5c70-0735-11e8-9816-fe2e87947f14.PNG">
 ## Getting Started
 ### Requirements
 For Windows 10:
