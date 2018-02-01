@@ -62,10 +62,8 @@ function workon {
           lsvirtualenv
         }
   }
-
-    
-  
 }
+
 # Powershell autocomplete like bash
 Set-PSReadlineKeyHandler -Key Tab -Function Complete
 
@@ -75,13 +73,11 @@ if (Test-Path($ChocolateyProfile)) {
   Import-Module "$ChocolateyProfile"
 }
 
+# Hack for oh-my-posh
 $env:ConEmuANSI = $True
 
 # Connect to SSH
 Start-SshAgent
-
-# Status of Elevated prompt
-
 
 # ls,ll,dir like Bash
 Import-Module Get-ChildItemColor
@@ -106,9 +102,12 @@ function cddash {
 # 'cd -'
 # Go back to last location
 Set-Alias -Name cd -value cddash -Option AllScope
+
 # Git status summary information that can be displayed in the PowerShell prompt
 Import-Module posh-git
 Import-Module oh-my-posh
+
+# Change this line to your '\Documents\WindowsPowerShell\PoshThemes'
 $ThemeSettings.MyThemesLocation = 'C:\Userfiles\awalker\Documents\WindowsPowerShell\PoshThemes'
 
 $ThemeSettings.PromptSymbols             = @{
@@ -138,5 +137,3 @@ $ThemeSettings.GitSymbols                = @{
         BranchBehindStatusSymbol         = [char]::ConvertFromUtf32(0xF433)
 }
 Set-Theme mytheme
-
-# $ThemeSettings.Colors.VirtualEnvBackgroundColor = [ConsoleColor]::DarkYellow
