@@ -29,7 +29,7 @@ iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex
 ```
 choco install git.install -y
 ```
-<span style="color:red">some *make sure you close and reopen your conslole at this point since your windows enviroment variables have been altered.* text</span>
+### <span style="color:red"> make sure you close and reopen your conslole at this point since your windows enviroment variables have been altered. </span>
 
 #### Clone this repo and copy the files to:
 ```
@@ -77,7 +77,7 @@ WORKON_HOME   Wherever you saved created your Envs folder (%USERPROFILE%\Reposit
 ```
 Or wherever you want virtualenvwrapper to put your virtualenvs.
 
-### <span style="color:red">some *make sure you close and reopen your conslole at this point since your windows enviroment variables have been altered.* text</span>
+### <span style="color:red"> make sure you close and reopen your conslole at this point since your windows enviroment variables have been altered. </span>
 
 ## Settings
 #### In PowerShell
