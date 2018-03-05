@@ -33,11 +33,11 @@ choco install git.install -y
 
 #### Clone this repo and copy the files to:
 ```
-'%USERPROFILE%\Documents\WindowsPowerShell\
+%USERPROFILE%\Documents\WindowsPowerShell\
 ```
+***note that if this directory doesn't exist yet, make sure that you create it.
 
 ##### Install PowerShell modules
-
 ```
 Install-PackageProvider NuGet -MinimumVersion '2.8.5.201' -Force
 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
@@ -69,7 +69,7 @@ Wherever your **`Documents`** folder is located. e.g.
 ```
 %USERPROFILE%\Documents\WindowsPowerShell\Tools\ColorTool
 ```
-##### If you haven't already done so, create a 'Envs' folder wherever you want (usually located with your git repos)
+#### If you haven't already done so, create a 'Envs' folder wherever you want (usually located with your git repos)
 
 Add the following to User Variables in environment variables
 ```
@@ -77,7 +77,8 @@ WORKON_HOME   Wherever you saved created your Envs folder (%USERPROFILE%\Reposit
 ```
 Or wherever you want virtualenvwrapper to put your virtualenvs.
 
-## <span style="color:red">some *make sure you close and reopen your conslole at this point since your windows enviroment variables have been altered.* text</span>
+### <span style="color:red">some *make sure you close and reopen your conslole at this point since your windows enviroment variables have been altered.* text</span>
+
 ## Settings
 #### In PowerShell
 
