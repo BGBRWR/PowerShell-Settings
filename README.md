@@ -12,6 +12,11 @@ For Linux:
 > If you are not working with python or not using virtualenvs you can remove the `workon` function from [Microsoft.PowerShell_profile.ps1](https://github.com/BGBRWR/PowerShell-Settings/blob/master/Microsoft.PowerShell_profile.ps1#L1)
 
 ### Installing
+
+#### Clone this repo and copy the files to 
+
+
+
 ##### Set your PowerShell execution policy
 ```
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
@@ -24,7 +29,15 @@ iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex
 ```
 choco install git.install -y
 ```
+<span style="color:red">some *make sure you close and reopen your conslole at this point since your windows enviroment variables have been altered.* text</span>
+
+#### Clone this repo and copy the files to:
+```
+'%USERPROFILE%\Documents\WindowsPowerShell\
+```
+
 ##### Install PowerShell modules
+
 ```
 Install-PackageProvider NuGet -MinimumVersion '2.8.5.201' -Force
 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
@@ -41,7 +54,7 @@ Update-Module Get-ChildItemColor -Scope CurrentUser
 ```
 **Change `$ThemeSettings.MyThemesLocation` in [Microsoft.PowerShell_profile.ps1](https://github.com/BGBRWR/PowerShell-Settings/blob/master/Microsoft.PowerShell_profile.ps1#L112) to your own '\Documents\WindowsPowerShell\PoshThemes'** e.g.
 ```
-$ThemeSettings.MyThemesLocation = 'C:\Userfiles\awalker\Documents\WindowsPowerShell\PoshThemes'
+$ThemeSettings.MyThemesLocation = '%USERPROFILE%\Documents\WindowsPowerShell\PoshThemes'
 ```
 
 ### Install DejaVu Font
@@ -50,20 +63,21 @@ $ThemeSettings.MyThemesLocation = 'C:\Userfiles\awalker\Documents\WindowsPowerSh
 ### Setup Enviroment Variables
 Add the following to system's PATH in environment variables
 ```
-...\Documents\WindowsPowerShell\Tools\ColorTool
+%USERPROFILE%\Documents\WindowsPowerShell\Tools\ColorTool
 ```
 Wherever your **`Documents`** folder is located. e.g.
 ```
-C:\Userfiles\awalker\Documents\WindowsPowerShell\Tools\ColorTool
+%USERPROFILE%\Documents\WindowsPowerShell\Tools\ColorTool
 ```
+##### If you haven't already done so, create a 'Envs' folder wherever you want (usually located with your git repos)
 
 Add the following to User Variables in environment variables
 ```
-WORKON_HOME   C:\Repositories\Envs
+WORKON_HOME   Wherever you saved created your Envs folder (%USERPROFILE%\Repositories\Envs)
 ```
 Or wherever you want virtualenvwrapper to put your virtualenvs.
 
-
+## <span style="color:red">some *make sure you close and reopen your conslole at this point since your windows enviroment variables have been altered.* text</span>
 ## Settings
 #### In PowerShell
 
