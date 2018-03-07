@@ -40,7 +40,7 @@ Update-Module oh-my-posh
 Update-Module Get-ChildItemColor
 ```
 ### Git Clone
-git clone this project and copy the contents to `...\Documents\WindowsPowerShell`
+Git clone this project and copy the contents to `...\Documents\WindowsPowerShell`.
 ### Install DejaVu Font
 [Custom DejaVu Font](https://github.com/BGBRWR/PowerShell-Settings/blob/master/DejaVuSansMono.ttf)
 
