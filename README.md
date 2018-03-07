@@ -31,12 +31,6 @@ choco install git.install -y
 ```
 ### <span style="color:red"> make sure you close and reopen your conslole at this point since your windows enviroment variables have been altered. </span>
 
-#### Clone this repo and copy the files to:
-```
-%USERPROFILE%\Documents\WindowsPowerShell\
-```
-***note that if this directory doesn't exist yet, make sure that you create it.
-
 ##### Install PowerShell modules
 ```
 Install-PackageProvider NuGet -MinimumVersion '2.8.5.201' -Force
@@ -52,12 +46,19 @@ Update-Module posh-git -Scope CurrentUser
 Update-Module oh-my-posh -Scope CurrentUser
 Update-Module Get-ChildItemColor -Scope CurrentUser
 ```
+
+#### Clone this repo and copy the files to:
+```
+%USERPROFILE%\Documents\WindowsPowerShell\
+```
+***note that if this directory doesn't exist yet, make sure that you create it.
+
 **Change `$ThemeSettings.MyThemesLocation` in [Microsoft.PowerShell_profile.ps1](https://github.com/BGBRWR/PowerShell-Settings/blob/master/Microsoft.PowerShell_profile.ps1#L112) to your own '\Documents\WindowsPowerShell\PoshThemes'** e.g.
 ```
 $ThemeSettings.MyThemesLocation = '%USERPROFILE%\Documents\WindowsPowerShell\PoshThemes'
 ```
 
-### Install DejaVu Font
+### Install DejaVu Font (from the repo you cloned)
 [Custom DejaVu Font](https://github.com/BGBRWR/PowerShell-Settings/blob/master/DejaVuSansMono.ttf)
 
 ### Setup Enviroment Variables
