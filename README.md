@@ -35,33 +35,31 @@ Install-Module Get-ChildItemColor -Scope CurrentUser
 Or for updating
 ```
 Update-Module powershellget
-Update-Module posh-git -Scope CurrentUser
-Update-Module oh-my-posh -Scope CurrentUser
-Update-Module Get-ChildItemColor -Scope CurrentUser
+Update-Module posh-git
+Update-Module oh-my-posh
+Update-Module Get-ChildItemColor
 ```
-**Change `$ThemeSettings.MyThemesLocation` in [Microsoft.PowerShell_profile.ps1](https://github.com/BGBRWR/PowerShell-Settings/blob/master/Microsoft.PowerShell_profile.ps1#L112) to your own '\Documents\WindowsPowerShell\PoshThemes'** e.g.
-```
-$ThemeSettings.MyThemesLocation = 'C:\Userfiles\awalker\Documents\WindowsPowerShell\PoshThemes'
-```
-
+### Git Clone
+git clone this project and copy the contents to `...\Documents\WindowsPowerShell`
 ### Install DejaVu Font
 [Custom DejaVu Font](https://github.com/BGBRWR/PowerShell-Settings/blob/master/DejaVuSansMono.ttf)
 
 ### Setup Enviroment Variables
-Add the following to system's PATH in environment variables
+Add the following to user's PATH in environment variables
 ```
 ...\Documents\WindowsPowerShell\Tools\ColorTool
 ```
 Wherever your **`Documents`** folder is located. e.g.
 ```
-C:\Userfiles\awalker\Documents\WindowsPowerShell\Tools\ColorTool
+C:\Users\BGBRWR\Documents\WindowsPowerShell\Tools\ColorTool
 ```
 
+#### Optional
 Add the following to User Variables in environment variables
 ```
 WORKON_HOME   C:\Repositories\Envs
 ```
-Or wherever you want virtualenvwrapper to put your virtualenvs.
+Or wherever you want virtualenvwrapper to put your virtualenvs. By default, this is %USERPROFILE%\Envs.
 
 
 ## Settings

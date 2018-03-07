@@ -26,7 +26,7 @@ function workon {
         $AttributeCollection.Add($ParameterAttribute)
 
         # Generate and set the ValidateSet. You definitely want to change this. This part populates your set. 
-        $arrSet = Get-ChildItem -Path C:\Repositories\Envs -Directory | Select-Object -ExpandProperty Name
+        $arrSet = Get-ChildItem -Path $WORKON_HOME -Directory | Select-Object -ExpandProperty Name
         $ValidateSetAttribute = New-Object System.Management.Automation.ValidateSetAttribute($arrSet)
 
         # Add the ValidateSet to the attributes collection
@@ -110,8 +110,8 @@ Set-Alias -Name cd -value cddash -Option AllScope
 Import-Module posh-git
 Import-Module oh-my-posh
 
-# Change this line to your '\Documents\WindowsPowerShell\PoshThemes'
-$ThemeSettings.MyThemesLocation = 'C:\Userfiles\awalker\Documents\WindowsPowerShell\PoshThemes'
+# Sets location of custom themes
+$ThemeSettings.MyThemesLocation = $env:HOME + '\Documents\WindowsPowerShell\PoshThemes'
 
 $ThemeSettings.PromptSymbols = @{
     StartSymbol                    = ' '        
