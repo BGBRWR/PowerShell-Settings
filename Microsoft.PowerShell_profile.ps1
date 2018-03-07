@@ -48,7 +48,7 @@ function workon {
         try {
             if ($env) {
                 & $WORKON_HOME\$env\Scripts\activate.ps1
-                if (Get-Content $WORKON_HOME\$env\.project) {
+                if (Test-Path $WORKON_HOME\$env\.project) {
                     cd (Get-Content $WORKON_HOME\$env\.project)
                 }
             }
