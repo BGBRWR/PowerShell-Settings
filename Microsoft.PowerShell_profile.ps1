@@ -111,7 +111,7 @@ Import-Module posh-git
 Import-Module oh-my-posh
 
 # Sets location of custom themes
-$ThemeSettings.MyThemesLocation = $env:HOME + '\Documents\WindowsPowerShell\PoshThemes'
+$ThemeSettings.MyThemesLocation = [environment]::getfolderpath("mydocuments") + '\WindowsPowerShell\PoshThemes'
 
 $ThemeSettings.PromptSymbols = @{
     StartSymbol                    = ' '        
