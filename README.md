@@ -1,95 +1,81 @@
 # PowerShell-Settings
-Improve PowerShell because it's ugly.
-<img width="841" alt="powershellscreenshot" src="https://user-images.githubusercontent.com/20848224/35691185-09ea5c70-0735-11e8-9816-fe2e87947f14.PNG">
-## Getting Started
-### Requirements
-For Windows 10:
-[virtualenvwrapper-win](https://pypi.python.org/pypi/virtualenvwrapper-win)
 
-For Linux:
-[virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)
+Custom PowerShell profile with a better prompt, colored output, and productivity shortcuts.
 
-> If you are not working with python or not using virtualenvs you can remove the `workon` function from [Microsoft.PowerShell_profile.ps1](https://github.com/BGBRWR/PowerShell-Settings/blob/master/Microsoft.PowerShell_profile.ps1#L1)
+## Setup
 
-### Installing
-##### Set your PowerShell execution policy
-```
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Force
-```
-##### Install Chocolatey
-```
-iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex
-```
-##### Install Chocolatey packages
-```
-choco install git.install -y
-```
-##### Install PowerShell modules
-```
-Install-PackageProvider NuGet -MinimumVersion '2.8.5.201' -Force
-Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
-Install-Module posh-git -Scope CurrentUser
-Install-Module oh-my-posh -Scope CurrentUser
-Install-Module Get-ChildItemColor -Scope CurrentUser
-```
-Or for updating
-```
-Update-Module powershellget
-Update-Module posh-git
-Update-Module oh-my-posh
-Update-Module Get-ChildItemColor
-```
-### Git Clone
-Git clone this project and copy the contents to `...\Documents\WindowsPowerShell`.
-### Install DejaVu Font
-[Custom DejaVu Font](https://github.com/BGBRWR/PowerShell-Settings/blob/master/DejaVuSansMono.ttf)
+Run the setup script as Administrator — it handles everything automatically:
 
-### Setup Enviroment Variables
-Add the following to user's PATH in environment variables
-```
-...\Documents\WindowsPowerShell\Tools\ColorTool
-```
-Wherever your **`Documents`** folder is located. e.g.
-```
-C:\Users\BGBRWR\Documents\WindowsPowerShell\Tools\ColorTool
+```powershell
+git clone https://github.com/BGBRWR/PowerShell-Settings
+cd PowerShell-Settings
+.\setup.ps1
 ```
 
-#### Optional
-Add the following to User Variables in environment variables
-```
-WORKON_HOME   C:\Repositories\Envs
-```
-Or wherever you want virtualenvwrapper to put your virtualenvs. By default, this is %USERPROFILE%\Envs.
+The script will:
 
+1. Set execution policy to `RemoteSigned`
+2. Install [Chocolatey](https://chocolatey.org/) and git
+3. Install required PowerShell modules
+4. Symlink `Microsoft.PowerShell_profile.ps1` to `$PROFILE`
+5. Symlink `atomic.omp.json` to `~/atomic.omp.json`
+6. Install the DejaVuSansMono font
 
-## Settings
-#### In PowerShell
+## What's Installed
 
-Change font to `DejaVuSansMono`.
+| Item                                                                                      | Purpose                                |
+| ----------------------------------------------------------------------------------------- | -------------------------------------- |
+| [oh-my-posh](https://ohmyposh.dev/)                                                       | Custom prompt (atomic theme)           |
+| [posh-git](https://github.com/dahlbyk/posh-git)                                           | Git status in prompt                   |
+| [Get-ChildItemColor](https://github.com/joonro/Get-ChildItemColor)                        | Colored `ls` output                    |
+| [Microsoft.WinGet.CommandNotFound](https://github.com/microsoft/winget-command-not-found) | Suggests installs for unknown commands |
+| DejaVuSansMono                                                                            | Nerd Font for prompt glyphs            |
 
-You can change colors with [ColorTool](https://github.com/Microsoft/console/tree/master/tools/ColorTool).
-```
-colortool -b 'seti'
-```
-Extra themes are already included. You can review them [here](https://github.com/mbadolato/iTerm2-Color-Schemes).
-#### In VSCode 
-```
-"terminal.integrated.shell.windows": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
-"terminal.integrated.fontFamily": "DejaVuSansMono",
-"terminal.integrated.fontSize": 16
-```
+## Profile Reference
+
+### Navigation
+
+| Command      | Description                   |
+| ------------ | ----------------------------- |
+| `cd -`       | Go back to previous directory |
+| `dev`        | `cd C:/dev`                   |
+| `catsclient` | `cd C:/dev/cats-frontend`     |
+
+### Build
+
+| Command | Description                                          |
+| ------- | ---------------------------------------------------- |
+| `clean` | Remove all `obj/` and `bin/` directories recursively |
+| `dt`    | Print current datetime as `yyyyMMddHHmmss`           |
+
+### .NET
+
+| Command | Description                           |
+| ------- | ------------------------------------- |
+| `vs`    | Open `.sln` file in current directory |
+| `vsc`   | Open current directory in VS Code     |
+| `dr`    | `dotnet restore`                      |
+| `drn`   | `dotnet restore --no-cache`           |
+
+### Git
+
+| Command                      | Description                                                                                                               |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `pull [-b <branch>]`         | `git pull`, optionally from a specific branch                                                                             |
+| `pull-all`                   | `git pull` every repo in subdirectories                                                                                   |
+| `push [-m <msg>] [-ac] [-o]` | Stage, commit, and push. Blocks pushes to master/develop unless `-o`                                                      |
+| `branch <name>`              | `git checkout -b <name>` with prefix shorthands: `b/` → `bugfix/`, `f/` → `feature/`, `r/` → `release/`, `h/` → `hotfix/` |
+| `stash`                      | `git stash -u`                                                                                                            |
+| `pop`                        | `git stash pop`                                                                                                           |
+| `git-reset`                  | Hard reset to previous commit and pull                                                                                    |
+| `gite`                       | Open GitExtensions                                                                                                        |
+
+### AWS
+
+| Command     | Description                       |
+| ----------- | --------------------------------- |
+| `aws-login` | `aws sso login --profile default` |
 
 ## Authors
 
-* **[Austin Walker](https://github.com/BGBRWR)** - *Initial work* - [PowerShellSettings](https://github.com/BGBRWR/PowerShell-Settings)
-
-## Acknowledgments
-
-* [Matthew Hodgkins' Blog](https://hodgkins.io/ultimate-powershell-prompt-and-git-setup)
-* [Get-ChildItemColor](https://github.com/joonro/Get-ChildItemColor)
-* [ColorTool](https://github.com/Microsoft/console/tree/master/tools/ColorTool)
-* [iTerm2-Color-Schemes](https://github.com/mbadolato/iTerm2-Color-Schemes)
-* [oh-my-posh](https://github.com/JanJoris/oh-my-posh)
-* [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts)
-* [FontForge](http://fontforge.github.io/en-US/)
-* [posh-git](https://github.com/dahlbyk/posh-git)
+- **[Austin Walker](https://github.com/BGBRWR)**

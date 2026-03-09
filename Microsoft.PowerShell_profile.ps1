@@ -1,142 +1,145 @@
-function workon {
-    # Autocomplete for workon environments
-    [CmdletBinding()]
-    Param(
-        # Any other parameters can go here
-    )
-
-    DynamicParam {
-        # Set the dynamic parameters' name. You probably want to change this.
-        $ParameterName = 'env'
-
-        $WORKON_HOME = [environment]::GetEnvironmentVariable("WORKON_HOME")
-           
-        # Create the dictionary 
-        $RuntimeParameterDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
-
-        # Create the collection of attributes
-        $AttributeCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
-
-        # Create and set the parameters' attributes. You may also want to change these.
-        $ParameterAttribute = New-Object System.Management.Automation.ParameterAttribute
-        $ParameterAttribute.Mandatory = $false
-        $ParameterAttribute.Position = 0
-
-        # Add the attributes to the attributes collection
-        $AttributeCollection.Add($ParameterAttribute)
-
-        # Generate and set the ValidateSet. You definitely want to change this. This part populates your set. 
-        $arrSet = Get-ChildItem -Path $WORKON_HOME -Directory | Select-Object -ExpandProperty Name
-        $ValidateSetAttribute = New-Object System.Management.Automation.ValidateSetAttribute($arrSet)
-
-        # Add the ValidateSet to the attributes collection
-        $AttributeCollection.Add($ValidateSetAttribute)
-
-        # Create and return the dynamic parameter
-        $RuntimeParameter = New-Object System.Management.Automation.RuntimeDefinedParameter($ParameterName, [string], $AttributeCollection)
-        $RuntimeParameterDictionary.Add($ParameterName, $RuntimeParameter)
-        return $RuntimeParameterDictionary
-    }
-
-    begin {
-        # Bind the parameter to a friendly variable
-        $env = $PsBoundParameters[$ParameterName]
-    }
-
-    process {
-        # Your code goes here
-        try {
-            if ($env) {
-                & $WORKON_HOME\$env\Scripts\activate.ps1
-                if (Test-Path $WORKON_HOME\$env\.project) {
-                    cd (Get-Content $WORKON_HOME\$env\.project)
-                }
-            }
-            else {
-                Write-Error 'Enter a enviroment name.'
-                echo "Here are your available enviroments."
-                lsvirtualenv
-            }
-        }
-        catch {
-            Write-Error $env' does not exist.'
-            echo "Here are your available enviroments."
-            lsvirtualenv
-        }
-    }
-}
-
-# Powershell autocomplete like bash
-Set-PSReadlineKeyHandler -Key Tab -Function Complete
+Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView
+Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 
 # Chocolatey profile
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-if (Test-Path($ChocolateyProfile)) {
-    Import-Module "$ChocolateyProfile"
+if (Test-Path $ChocolateyProfile) {
+    Import-Module $ChocolateyProfile
 }
 
-# Hack for oh-my-posh
-$env:ConEmuANSI = $True
-
-# Connect to SSH
-Start-SshAgent
-
-# ls,ll,dir like Bash
 Import-Module Get-ChildItemColor
+Import-Module posh-git
+Import-Module -Name Microsoft.WinGet.CommandNotFound
 
-Set-Alias ls Get-ChildItemColor -option AllScope -Force
-Set-Alias ll Get-ChildItemColor -option AllScope -Force
-Set-Alias dir Get-ChildItemColor -option AllScope -Force
+Set-Alias ls  Get-ChildItemColor -Option AllScope -Force
+Set-Alias ll  Get-ChildItemColor -Option AllScope -Force
+Set-Alias dir Get-ChildItemColor -Option AllScope -Force
+Set-Alias find 'C:/Program Files/git/usr/bin/find.exe'
+
+oh-my-posh init pwsh --config 'https://github.com/JanDeDobbeleer/oh-my-posh/blob/main/themes/atomic.omp.json' | Invoke-Expression
+
+$global:OLDPWD = $PWD
 
 function cddash {
     if ($args[0] -eq '-') {
-        $pwd = $OLDPWD;
+        $pwd = $OLDPWD
+    } else {
+        $pwd = $args[0]
     }
-    else {
-        $pwd = $args[0];
+    $tmp = $PWD
+    if ($pwd) { Set-Location $pwd }
+    $global:OLDPWD = $tmp
+}
+Set-Alias -Name cd -Value cddash -Option AllScope
+
+## NAVIGATION
+
+function dev { Set-Location 'C:/dev' }
+
+function catsclient { Set-Location 'C:/dev/cats-frontend' }
+
+## BUILD HELPERS
+
+function clean {
+    Get-ChildItem . -Include obj,bin -Recurse -Force | Remove-Item -Recurse -Force
+}
+
+function dt { Get-Date -Format "yyyyMMddHHmmss" }
+
+## DOTNET HELPERS
+
+function vs  { & ./*.sln }
+function vsc { code . }
+function dr  { dotnet restore }
+function drn { dotnet restore --no-cache }
+
+## GIT HELPERS
+
+function gite { & 'C:/Program Files (x86)/GitExtensions/GitExtensions.exe' }
+
+function git-reset {
+    git fetch
+    git reset --hard HEAD~1
+    git clean -d -f
+    git pull
+}
+
+function pull {
+    param ([alias("b")][string] $branchName)
+    if (![string]::IsNullOrEmpty($branchName)) {
+        git pull origin $branchName
+    } else {
+        git pull
     }
-    $tmp = pwd;
+}
 
-    if ($pwd) {
-        Set-Location $pwd;
+function pull-all {
+    Write-Host "Running the Git Pull All tool..."
+    Write-Host "Note: This tool will call 'git pull' for each git repository under it." -ForegroundColor Cyan
+    Push-Location .
+    Write-Host "`nParent Directory: $PSScriptRoot" -ForegroundColor Cyan
+    foreach ($path in Get-ChildItem) {
+        if ($path.PSIsContainer) {
+            Write-Host "`nChild Directory: $($path.FullName)" -ForegroundColor Cyan
+            Set-Location $path.FullName
+            if (git rev-parse --git-dir 2>$null) {
+                Write-Host "Getting latest..." -ForegroundColor Green
+                pull
+            } else {
+                Write-Host "Not a Git repository. Skipping..." -ForegroundColor Yellow
+            }
+        }
     }
-    Set-Variable -Name OLDPWD -Value $tmp -Scope global;
+    Pop-Location
 }
-# 'cd -'
-# Go back to last location
-Set-Alias -Name cd -value cddash -Option AllScope
 
-# Git status summary information that can be displayed in the PowerShell prompt
-Import-Module posh-git
-Import-Module oh-my-posh
+function stash { git stash -u }
+function pop   { git stash pop }
 
-# Sets location of custom themes
-$ThemeSettings.MyThemesLocation = [environment]::getfolderpath("mydocuments") + '\WindowsPowerShell\PoshThemes'
-
-$ThemeSettings.PromptSymbols = @{
-    StartSymbol                    = ' '        
-    TruncatedFolderSymbol          = '..'
-    PromptIndicator                = [char]::ConvertFromUtf32(0xE285)  
-    FailedCommandSymbol            = [char]::ConvertFromUtf32(0xF165)        
-    ElevatedSymbol                 = [char]::ConvertFromUtf32(0xF0E7)
-    SegmentForwardSymbol           = [char]::ConvertFromUtf32(0xE0B0)
-    SegmentBackwardSymbol          = [char]::ConvertFromUtf32(0x26A1)
-    SegmentSeparatorForwardSymbol  = [char]::ConvertFromUtf32(0x26A1)
-    SegmentSeparatorBackwardSymbol = [char]::ConvertFromUtf32(0x26A1)
-    PathSeparator                  = '\'
-    VirtualEnvSymbol               = [char]::ConvertFromUtf32(0xF0FB)
+function branch {
+    param ([alias("b")][string] $branchName)
+    if    ($branchName.StartsWith("b/")) { $branchName = "bugfix/$($branchName.Substring(2))" }
+    elseif ($branchName.StartsWith("f/")) { $branchName = "feature/$($branchName.Substring(2))" }
+    elseif ($branchName.StartsWith("r/")) { $branchName = "release/$($branchName.Substring(2))" }
+    elseif ($branchName.StartsWith("h/")) { $branchName = "hotfix/$($branchName.Substring(2))" }
+    git checkout -b $branchName
+    Write-Host "git checkout -b $branchName"
 }
-$ThemeSettings.GitSymbols = @{
-    BranchSymbol                  = [char]::ConvertFromUtf32(0xF406)
-    BeforeStashSymbol             = '{'
-    AfterStashSymbol              = '}'
-    DelimSymbol                   = '|'
-    LocalWorkingStatusSymbol      = '!'
-    LocalStagedStatusSymbol       = '~'
-    LocalDefaultStatusSymbol      = ''
-    BranchUntrackedSymbol         = [char]::ConvertFromUtf32(0xF071)
-    BranchIdenticalStatusToSymbol = [char]::ConvertFromUtf32(0xF039)
-    BranchAheadStatusSymbol       = [char]::ConvertFromUtf32(0xF431)
-    BranchBehindStatusSymbol      = [char]::ConvertFromUtf32(0xF433)
+
+function push {
+    param (
+        [alias("m")][string] $message,
+        [alias("ac")][switch] $allowConfigs,
+        [alias("o")][switch] $override
+    )
+    $branch = (git rev-parse --abbrev-ref HEAD).Trim()
+    if (!$branch) { throw [System.ArgumentException] "Can't push to a non-branch!" }
+
+    if ($branch -ieq "master" -or $branch -ieq "develop") {
+        if ($override) {
+            Write-Host "WARNING!!! You just pushed directly to master/develop!" -ForegroundColor Yellow
+        } else {
+            throw [System.ArgumentException] "Not allowed to push directly to master/develop!"
+        }
+    }
+
+    if (![string]::IsNullOrEmpty($message)) {
+        git add -A
+        if (-not $allowConfigs) {
+            git reset *.json
+            git reset *.config
+        }
+        git commit -m $message
+    }
+
+    git push --set-upstream origin $branch
+    Write-Host "git push --set-upstream origin $branch" -ForegroundColor Cyan
 }
-Set-Theme mytheme
+
+## AWS
+
+function aws-login { aws sso login --profile default }
+
+Write-Host
+Write-Host "Welcome PowerShell Master, $([Environment]::UserName)."
+Write-Host
