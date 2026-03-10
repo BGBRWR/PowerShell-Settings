@@ -152,10 +152,10 @@ if (Test-Path $wtSettingsDir) {
     $src  = Get-Content $wtSettingsSrc  -Raw | ConvertFrom-Json
     $dest = if (Test-Path $wtSettingsDest) { Get-Content $wtSettingsDest -Raw | ConvertFrom-Json } else { $src }
 
-    $dest.profiles.defaults        = $src.profiles.defaults
-    $dest.copyFormatting           = $src.copyFormatting
-    $dest.useAcrylicInTabRow       = $src.useAcrylicInTabRow
-    $dest.alwaysShowNotificationIcon = $src.alwaysShowNotificationIcon
+    $dest.profiles.defaults = $src.profiles.defaults
+    foreach ($prop in @('copyFormatting', 'useAcrylicInTabRow', 'alwaysShowNotificationIcon')) {
+        $dest | Add-Member -MemberType NoteProperty -Name $prop -Value $src.$prop -Force
+    }
 
     $dest | ConvertTo-Json -Depth 10 | Set-Content $wtSettingsDest -Encoding UTF8
     Write-Done "Windows Terminal settings applied"
