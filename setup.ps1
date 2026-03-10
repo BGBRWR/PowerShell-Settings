@@ -68,7 +68,21 @@ if (Get-Command git -ErrorAction SilentlyContinue) {
 }
 
 # ---------------------------------------------------------------------------
-# 4. PowerShell modules
+# 4. oh-my-posh (binary, adds to PATH via Chocolatey)
+# ---------------------------------------------------------------------------
+Write-Step "Checking oh-my-posh"
+if (Get-Command oh-my-posh -ErrorAction SilentlyContinue) {
+    Write-Skip "oh-my-posh already installed"
+} else {
+    Write-Host "    Installing oh-my-posh via Chocolatey..."
+    choco install oh-my-posh -y
+    $env:Path = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' +
+                [System.Environment]::GetEnvironmentVariable('Path', 'User')
+    Write-Done "oh-my-posh installed"
+}
+
+# ---------------------------------------------------------------------------
+# 5. PowerShell modules
 # ---------------------------------------------------------------------------
 Write-Step "Installing PowerShell modules"
 
@@ -79,7 +93,7 @@ if (-not (Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue | Where-
 
 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
 
-$modules = @('posh-git', 'oh-my-posh', 'Get-ChildItemColor', 'Microsoft.WinGet.CommandNotFound')
+$modules = @('posh-git', 'Get-ChildItemColor', 'Microsoft.WinGet.CommandNotFound')
 foreach ($mod in $modules) {
     if (Get-Module -ListAvailable -Name $mod) {
         Write-Skip "$mod already installed"
@@ -91,7 +105,7 @@ foreach ($mod in $modules) {
 }
 
 # ---------------------------------------------------------------------------
-# 5. Profile symlink
+# 6. Profile symlink
 # ---------------------------------------------------------------------------
 Write-Step "Setting up PowerShell profile symlink"
 
@@ -120,23 +134,42 @@ if (Test-Path $PROFILE) {
 }
 
 # ---------------------------------------------------------------------------
-# 6. Font installation
+# 7. Windows Terminal settings
 # ---------------------------------------------------------------------------
-Write-Step "Installing DejaVuSansMono font"
+Write-Step "Applying Windows Terminal settings"
 
-$fontSource = Join-Path $scriptDir 'DejaVuSansMono.ttf'
-$fontDest   = 'C:\Windows\Fonts\DejaVuSansMono.ttf'
-$fontName   = 'DejaVu Sans Mono (TrueType)'
-$fontValue  = 'DejaVuSansMono.ttf'
+$wtSettingsDir = Join-Path $env:LOCALAPPDATA 'Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState'
+$wtSettingsDest = Join-Path $wtSettingsDir 'settings.json'
+$wtSettingsSrc  = Join-Path $scriptDir 'terminal-settings.json'
 
-if (Test-Path $fontDest) {
-    Write-Skip "Font already installed at $fontDest"
+if (Test-Path $wtSettingsDir) {
+    if (Test-Path $wtSettingsDest) {
+        Copy-Item $wtSettingsDest "$wtSettingsDest.bak" -Force
+        Write-Host "    Backed up existing settings to settings.json.bak"
+    }
+
+    # Merge repo defaults into existing settings to preserve auto-detected profiles
+    $src  = Get-Content $wtSettingsSrc  -Raw | ConvertFrom-Json
+    $dest = if (Test-Path $wtSettingsDest) { Get-Content $wtSettingsDest -Raw | ConvertFrom-Json } else { $src }
+
+    $dest.profiles.defaults        = $src.profiles.defaults
+    $dest.copyFormatting           = $src.copyFormatting
+    $dest.useAcrylicInTabRow       = $src.useAcrylicInTabRow
+    $dest.alwaysShowNotificationIcon = $src.alwaysShowNotificationIcon
+
+    $dest | ConvertTo-Json -Depth 10 | Set-Content $wtSettingsDest -Encoding UTF8
+    Write-Done "Windows Terminal settings applied"
 } else {
-    Copy-Item $fontSource $fontDest -Force
-    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts' `
-        -Name $fontName -Value $fontValue -Force
-    Write-Done "Font installed: $fontName"
+    Write-Skip "Windows Terminal not installed — skipping"
 }
+
+# ---------------------------------------------------------------------------
+# 8. Font installation
+# ---------------------------------------------------------------------------
+Write-Step "Installing Hack Nerd Font"
+
+oh-my-posh font install Hack
+Write-Done "Hack Nerd Font installed"
 
 # ---------------------------------------------------------------------------
 # Done

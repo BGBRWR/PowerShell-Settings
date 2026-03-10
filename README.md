@@ -16,20 +16,21 @@ The script will:
 
 1. Set execution policy to `RemoteSigned`
 2. Install [Chocolatey](https://chocolatey.org/) and git
-3. Install required PowerShell modules
-4. Symlink `Microsoft.PowerShell_profile.ps1` to `$PROFILE`
-5. Symlink `atomic.omp.json` to `~/atomic.omp.json`
-6. Install the DejaVuSansMono font
+3. Install [oh-my-posh](https://ohmyposh.dev/) binary via Chocolatey
+4. Install required PowerShell modules
+5. Symlink `Microsoft.PowerShell_profile.ps1` to `$PROFILE`
+6. Apply Windows Terminal settings
+7. Install Hack Nerd Font
 
 ## What's Installed
 
 | Item                                                                                      | Purpose                                |
 | ----------------------------------------------------------------------------------------- | -------------------------------------- |
-| [oh-my-posh](https://ohmyposh.dev/)                                                       | Custom prompt (atomic theme)           |
+| [oh-my-posh](https://ohmyposh.dev/)                                                       | Custom prompt                          |
 | [posh-git](https://github.com/dahlbyk/posh-git)                                           | Git status in prompt                   |
 | [Get-ChildItemColor](https://github.com/joonro/Get-ChildItemColor)                        | Colored `ls` output                    |
 | [Microsoft.WinGet.CommandNotFound](https://github.com/microsoft/winget-command-not-found) | Suggests installs for unknown commands |
-| DejaVuSansMono                                                                            | Nerd Font for prompt glyphs            |
+| [Hack Nerd Font](https://www.nerdfonts.com/)                                              | Nerd Font for prompt glyphs            |
 
 ## Profile Reference
 
