@@ -16,7 +16,7 @@ Set-Alias ll  Get-ChildItemColor -Option AllScope -Force
 Set-Alias dir Get-ChildItemColor -Option AllScope -Force
 Set-Alias find 'C:/Program Files/git/usr/bin/find.exe'
 
-oh-my-posh init pwsh --config 'https://github.com/JanDeDobbeleer/oh-my-posh/blob/main/themes/atomic.omp.json' | Invoke-Expression
+oh-my-posh init pwsh --config './atomic.omp.json' | Invoke-Expression
 
 $global:OLDPWD = $PWD
 
@@ -40,7 +40,7 @@ function catsclient { Set-Location 'C:/dev/cats-frontend' }
 
 ## BUILD HELPERS
 
-function clean {
+function cleanobj {
     Get-ChildItem . -Include obj,bin -Recurse -Force | Remove-Item -Recurse -Force
 }
 

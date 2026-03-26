@@ -7,7 +7,8 @@
     - Installs Chocolatey and git
     - Installs required PowerShell modules
     - Creates a symlink for the PowerShell profile
-    - Installs the DejaVuSansMono font
+    - Creates a symlink for the oh-my-posh theme (atomic.omp.json)
+    - Installs the Hack Nerd Font
 .NOTES
     Must be run as Administrator.
 #>
@@ -148,16 +149,7 @@ if (Test-Path $wtSettingsDir) {
         Write-Host "    Backed up existing settings to settings.json.bak"
     }
 
-    # Merge repo defaults into existing settings to preserve auto-detected profiles
-    $src  = Get-Content $wtSettingsSrc  -Raw | ConvertFrom-Json
-    $dest = if (Test-Path $wtSettingsDest) { Get-Content $wtSettingsDest -Raw | ConvertFrom-Json } else { $src }
-
-    $dest.profiles.defaults = $src.profiles.defaults
-    foreach ($prop in @('copyFormatting', 'useAcrylicInTabRow', 'alwaysShowNotificationIcon')) {
-        $dest | Add-Member -MemberType NoteProperty -Name $prop -Value $src.$prop -Force
-    }
-
-    $dest | ConvertTo-Json -Depth 10 | Set-Content $wtSettingsDest -Encoding UTF8
+    Copy-Item $wtSettingsSrc $wtSettingsDest -Force
     Write-Done "Windows Terminal settings applied"
 } else {
     Write-Skip "Windows Terminal not installed — skipping"
@@ -168,8 +160,58 @@ if (Test-Path $wtSettingsDir) {
 # ---------------------------------------------------------------------------
 Write-Step "Installing Hack Nerd Font"
 
-oh-my-posh font install Hack
-Write-Done "Hack Nerd Font installed"
+$hackFontInstalled = Get-ChildItem 'C:\Windows\Fonts' -Filter 'Hack*.ttf' -ErrorAction SilentlyContinue
+if ($hackFontInstalled) {
+    Write-Skip "Hack Nerd Font already installed"
+} else {
+    # Do NOT use 'oh-my-posh font install' — when run as Administrator it also
+    # writes to Windows Terminal's settings.json, corrupting it for the AppContainer.
+    # Install the font directly via the Windows Shell API instead.
+    $fontUrl  = 'https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip'
+    $fontZip  = Join-Path $env:TEMP 'HackNerdFont.zip'
+    $fontDir  = Join-Path $env:TEMP 'HackNerdFont'
+
+    Invoke-WebRequest -Uri $fontUrl -OutFile $fontZip -UseBasicParsing
+    Expand-Archive -Path $fontZip -DestinationPath $fontDir -Force
+
+    $fonts = (New-Object -ComObject Shell.Application).Namespace(0x14)
+    foreach ($file in Get-ChildItem $fontDir -Include '*.ttf','*.otf' -Recurse) {
+        $fonts.CopyHere($file.FullName, 0x10)
+    }
+    Remove-Item $fontZip, $fontDir -Recurse -Force -ErrorAction SilentlyContinue
+    Write-Done "Hack Nerd Font installed"
+}
+
+# ---------------------------------------------------------------------------
+# 9. oh-my-posh theme symlink (atomic.omp.json)
+# ---------------------------------------------------------------------------
+Write-Step "Setting up oh-my-posh theme symlink (atomic.omp.json)"
+
+$ompThemesDir = Join-Path $env:LOCALAPPDATA 'Programs\oh-my-posh\themes'
+$ompThemeDest = Join-Path $ompThemesDir 'atomic.omp.json'
+$ompThemeSrc  = Join-Path $scriptDir 'atomic.omp.json'
+
+if (-not (Test-Path $ompThemeSrc)) {
+    Write-Warning "    atomic.omp.json not found in repo at $ompThemeSrc — skipping"
+} elseif (-not (Test-Path $ompThemesDir)) {
+    Write-Skip "oh-my-posh themes directory not found ($ompThemesDir) — skipping"
+} else {
+    if (Test-Path $ompThemeDest) {
+        $existing = Get-Item $ompThemeDest -Force
+        if ($existing.LinkType -eq 'SymbolicLink' -and $existing.Target -eq $ompThemeSrc) {
+            Write-Skip "Symlink already points to repo atomic.omp.json"
+        } else {
+            $backup = "$ompThemeDest.bak"
+            Write-Host "    Backing up existing theme to $backup"
+            Move-Item $ompThemeDest $backup -Force
+            New-Item -ItemType SymbolicLink -Path $ompThemeDest -Target $ompThemeSrc | Out-Null
+            Write-Done "Symlink created (old theme backed up)"
+        }
+    } else {
+        New-Item -ItemType SymbolicLink -Path $ompThemeDest -Target $ompThemeSrc | Out-Null
+        Write-Done "Symlink created: $ompThemeDest -> $ompThemeSrc"
+    }
+}
 
 # ---------------------------------------------------------------------------
 # Done
