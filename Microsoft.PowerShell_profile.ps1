@@ -16,7 +16,12 @@ Set-Alias ll  Get-ChildItemColor -Option AllScope -Force
 Set-Alias dir Get-ChildItemColor -Option AllScope -Force
 Set-Alias find 'C:/Program Files/git/usr/bin/find.exe'
 
-oh-my-posh init pwsh --config './atomic.omp.json' | Invoke-Expression
+# Config path must be absolute - newer oh-my-posh no longer falls back silently when a relative path misses
+$ompThemePath = Join-Path $env:LOCALAPPDATA 'Programs\oh-my-posh\themes\atomic.omp.json'
+if (-not (Test-Path $ompThemePath)) {
+    $ompThemePath = Join-Path $PSScriptRoot 'atomic.omp.json'
+}
+oh-my-posh init pwsh --config $ompThemePath | Invoke-Expression
 
 $global:OLDPWD = $PWD
 
